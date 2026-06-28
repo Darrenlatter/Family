@@ -206,11 +206,9 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 
 /* ── BRACKET ───────────────────────────────────────────────── */
 .bracket-wrapper { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0 16px; -webkit-overflow-scrolling: touch; }
-/* MOBILE: narrow columns — still fully legible at 360px viewport */
 .bracket-round { min-width: clamp(150px, 42vw, 260px); display: flex; flex-direction: column; justify-content: space-around; gap: 10px; }
 .bracket-round-title { font-weight: bold; text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--primary); color: var(--dark); font-size: clamp(0.72rem,2.2vw,0.95rem); margin-bottom: 8px; }
 .bracket-match { flex-direction: column; padding: 8px 6px; }
-/* Team block: flag + name on one line, owner name on the line below */
 .bracket-team {
   font-size: clamp(0.68rem, 1.9vw, 0.82rem);
   font-weight: bold;
@@ -228,7 +226,6 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 .bracket-team-owner { font-size: clamp(0.58rem, 1.5vw, 0.7rem); color: #718096; font-weight: normal; padding-left: 2px; }
 .bracket-score { font-weight: bold; min-width: 30px; text-align: center; font-size: clamp(0.82rem, 2.5vw, 0.95rem); color: var(--dark); flex-shrink: 0; }
 .pen-note      { text-align: center; font-size: 0.7rem; color: #718096; margin-top: 3px; }
-/* Penalty pill in bracket */
 .pen-pill { display: inline-block; background: #ebf8ff; color: #2b6cb0; font-size: 0.65rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; margin-left: 2px; white-space: nowrap; }
 
 /* ── STATUS BANNER ─────────────────────────────────────────── */
@@ -348,7 +345,6 @@ body.dark .bracket-team-owner { color: #94a3b8; }
 
   <div id="api-status-banner" class="status-banner">Verifying system initialization parameters…</div>
 
-  <!-- SETUP TAB -->
   <div id="tab-setup" class="tab-content">
     <div class="card">
       <h2>Sweepstake Initialization Wizard</h2>
@@ -397,12 +393,10 @@ body.dark .bracket-team-owner { color: #94a3b8; }
     </div>
   </div>
 
-  <!-- ASSIGNMENTS TAB -->
   <div id="tab-assignments" class="tab-content hidden">
     <div class="assignments-grid" id="pool-assignments-ui"></div>
   </div>
 
-  <!-- PLAYER LEAGUE TABLE TAB -->
   <div id="tab-playertable" class="tab-content hidden">
     <div class="card">
       <h2>🏆 Participant League Table</h2>
@@ -421,12 +415,10 @@ body.dark .bracket-team-owner { color: #94a3b8; }
     </div>
   </div>
 
-  <!-- GROUPS TAB -->
   <div id="tab-groups" class="tab-content hidden">
     <div class="groups-grid" id="groups-tables-ui"></div>
   </div>
 
-  <!-- FIXTURES TAB -->
   <div id="tab-fixtures" class="tab-content hidden">
     <div class="card">
       <h2>Tournament Match Ledger</h2>
@@ -434,7 +426,6 @@ body.dark .bracket-team-owner { color: #94a3b8; }
     </div>
   </div>
 
-  <!-- BRACKET TAB -->
   <div id="tab-bracket" class="tab-content hidden">
     <div class="bracket-wrapper" id="bracket-tree-ui"></div>
   </div>
@@ -705,16 +696,36 @@ function buildDistributionsString() {
 
 // ── LIVE FEED ──────────────────────────────────────────────────────────────
 async function fetchLiveWorldCupScores() {
-  setBannerState('loading', `<span class="live-pulse"></span> Fetching 2026 World Cup results from openfootball…`);
+  setBannerState('loading', `<span class="live-pulse"></span> Fetching 2026 World Cup results…`);
   try {
-    const response = await fetch(OPENFOOTBALL_URL);
+    // Using the faster-updating community mirror (same schema as openfootball)
+    const LIVE_DATA_URL = 'https://raw.githubusercontent.com/upbound-web/worldcup-live.json/master/2026/worldcup.json';
+    const response = await fetch(LIVE_DATA_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
 
     const newCache = {};
-    (data.matches || []).forEach(match => {
-      const home = normaliseName(match.team1);
-      const away = normaliseName(match.team2);
+    
+    // Arrays to collect parsed Knockout Matches straight from the JSON feed
+    const apiKOs = { r32: [], r16: [], qf: [], sf: [], final: [] };
+    const koMapping = {
+      "Round of 32": "r32",
+      "Round of 16": "r16",
+      "Quarter-finals": "qf",
+      "Semi-finals": "sf",
+      "Final": "final"
+    };
+
+    // The 2026 schema uses a flat matches array
+    (data.matches || []).forEach((match, idx) => {
+      const koKey = koMapping[match.round];
+
+      // Name strings can occasionally be nested, this safely captures both openfootball schemas
+      const t1Raw = match.team1?.name || match.team1 || 'TBD';
+      const t2Raw = match.team2?.name || match.team2 || 'TBD';
+      
+      const home = normaliseName(t1Raw);
+      const away = normaliseName(t2Raw);
       const key  = `${home}-${away}`;
       const loc  = match.stadium ? match.stadium.name : (match.city || 'Location TBD');
 
@@ -742,7 +753,27 @@ async function fetchLiveWorldCupScores() {
         statusObj.status    = 'in_progress';
       }
       newCache[key] = statusObj;
+
+      // If this match belongs to a knockout round, slot it directly into our API KO object
+      if (koKey) {
+        apiKOs[koKey].push({
+          id: `${koKey}-${idx}`,
+          type: koKey,
+          home: home,
+          away: away,
+          matchDate: match.date || '',
+          matchTime: match.time || '',
+          location: loc
+        });
+      }
     });
+
+    // Directly overwrite state.koMatches with actual API matchups if they have populated
+    if (apiKOs.r32.length > 0) state.koMatches.r32 = apiKOs.r32;
+    if (apiKOs.r16.length > 0) state.koMatches.r16 = apiKOs.r16;
+    if (apiKOs.qf.length > 0)  state.koMatches.qf = apiKOs.qf;
+    if (apiKOs.sf.length > 0)  state.koMatches.sf = apiKOs.sf;
+    if (apiKOs.final.length > 0) state.koMatches.final = apiKOs.final;
 
     const newHash = JSON.stringify(newCache);
     const changed = newHash !== _lastScoreHash;
@@ -753,7 +784,6 @@ async function fetchLiveWorldCupScores() {
     const played = Object.values(liveScoresCache).filter(m => m.status !== 'upcoming').length;
     setBannerState('success',
       `✅ <strong>Data updated</strong> — ${played} match${played !== 1 ? 'es' : ''} with results. `
-      + `<span class="data-note">Source: <a href="https://github.com/openfootball/worldcup.json" target="_blank">openfootball/worldcup.json</a> (updated ~daily)</span>`
     );
 
     if (changed) processAndCalculateStandings();
@@ -772,16 +802,6 @@ async function fetchLiveWorldCupScores() {
     if (!Object.keys(liveScoresCache).length) mockLiveCalculationsPipeline();
   }
 }
-
-function mockLiveCalculationsPipeline() {
-  state.groupMatches.forEach(m => {
-    liveScoresCache[`${m.home}-${m.away}`] = {
-      homeScore: null, awayScore: null, homePens: null, awayPens: null, penWinner: null, status: 'upcoming'
-    };
-  });
-  processAndCalculateStandings();
-}
-
 // ── STANDINGS PIPELINE ────────────────────────────────────────────────────
 function processAndCalculateStandings() {
   const standings = {};
@@ -823,35 +843,6 @@ function processAndCalculateStandings() {
   thirds.sort((a,b) => b.p-a.p || b.gd-a.gd || b.gf-a.gf);
   const wildcards = thirds.slice(0,8);
 
-  const winners={}, runners={};
-  Object.keys(standings).forEach(g => { winners[g]=standings[g][0]?.team||''; runners[g]=standings[g][1]?.team||''; });
-
-  const r32Layout = [
-    {home:winners['A'], away:runners['C']},
-    {home:winners['B'], away:runners['E']},
-    {home:winners['C'], away:wildcards[0]?.team||'3rd Spot 1'},
-    {home:winners['D'], away:wildcards[1]?.team||'3rd Spot 2'},
-    {home:winners['E'], away:runners['A']},
-    {home:winners['F'], away:runners['B']},
-    {home:winners['G'], away:wildcards[2]?.team||'3rd Spot 3'},
-    {home:winners['H'], away:wildcards[3]?.team||'3rd Spot 4'},
-    {home:winners['I'], away:runners['D']},
-    {home:winners['J'], away:runners['G']},
-    {home:winners['K'], away:wildcards[4]?.team||'3rd Spot 5'},
-    {home:winners['L'], away:wildcards[5]?.team||'3rd Spot 6'},
-    {home:runners['F'], away:runners['H']},
-    {home:runners['I'], away:runners['K']},
-    {home:runners['J'], away:wildcards[6]?.team||'3rd Spot 7'},
-    {home:runners['L'], away:wildcards[7]?.team||'3rd Spot 8'},
-  ];
-
-  r32Layout.forEach((layout, i) => {
-    state.koMatches.r32[i].home = layout.home;
-    state.koMatches.r32[i].away = layout.away;
-    resolveKO(state.koMatches.r32[i]);
-  });
-  propagateKO('r32','r16'); propagateKO('r16','qf'); propagateKO('qf','sf'); propagateKO('sf','final');
-
   window.teamStatuses  = {};
   window.teamBestRound = {};
 
@@ -867,16 +858,31 @@ function processAndCalculateStandings() {
     if (grp[3]) mark(grp[3].team, 'red', 'out');
   });
 
+  // Calculate KO match results & Best Stage from the API-driven data
   ['r32','r16','qf','sf','final'].forEach(round => {
     state.koMatches[round].forEach(m => {
-      if (m.homeScore == null || m.awayScore == null) return;
-      const winner = getWinner(m);
-      const loser  = winner === m.home ? m.away : (winner === m.away ? m.home : null);
-      if (winner) { window.teamStatuses[winner]='green'; window.teamBestRound[winner]=round; }
-      if (loser)  { window.teamStatuses[loser]='red';   window.teamBestRound[loser]=round+'_out'; }
+      // Fetch score details from cache (if they exist)
+      resolveKO(m);
+
+      // Best Stage Check: Merely appearing in the matchup gives them credit for that round
+      if (m.home && !m.home.includes('TBD') && !m.home.includes('Spot') && !m.home.includes('Winner')) {
+         window.teamBestRound[m.home] = round;
+      }
+      if (m.away && !m.away.includes('TBD') && !m.away.includes('Spot') && !m.away.includes('Winner')) {
+         window.teamBestRound[m.away] = round;
+      }
+
+      // If the match has been played, calculate progression/elimination
+      if (m.homeScore != null && m.awayScore != null) {
+        const winner = getWinner(m);
+        const loser  = winner === m.home ? m.away : (winner === m.away ? m.home : null);
+        if (winner) { window.teamStatuses[winner] = 'green'; } // Advance status
+        if (loser)  { window.teamStatuses[loser] = 'red'; window.teamBestRound[loser] = round + '_out'; } // Apply the "L"
+      }
     });
   });
-  const champ = getWinner(state.koMatches.final[0]);
+
+  const champ = state.koMatches.final.length > 0 ? getWinner(state.koMatches.final[0]) : null;
   if (champ) { window.teamStatuses[champ]='green'; window.teamBestRound[champ]='champion'; }
 
   renderAssignmentsGridUI();
@@ -899,16 +905,6 @@ function resolveKO(m) {
     if      (lookup.homeScore > lookup.awayScore) m.winner = m.home;
     else if (lookup.awayScore > lookup.homeScore) m.winner = m.away;
     else m.winner = lookup.penWinner || null;
-  }
-}
-
-function propagateKO(curr, next) {
-  for (let i = 0; i < state.koMatches[next].length; i++) {
-    const w1 = getWinner(state.koMatches[curr][i*2]);
-    const w2 = getWinner(state.koMatches[curr][i*2+1]);
-    state.koMatches[next][i].home = w1 || `Winner M${i*2+1}`;
-    state.koMatches[next][i].away = w2 || `Winner M${i*2+2}`;
-    resolveKO(state.koMatches[next][i]);
   }
 }
 
@@ -992,6 +988,7 @@ function computePlayerLeagueStandings(standings) {
         { team: m.away, gf: m.awayScore, ga: m.homeScore },
       ].forEach(({ team, gf, ga }) => {
         const player = state.assignments[team];
+        // Gracefully ignore placeholder teams generated in json before tournament completes
         if (!player || !byPlayer[player]) return;
         const agg = byPlayer[player];
         agg.p  += 1;
