@@ -4,48 +4,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIFA World Cup 2026™ Live Sweepstake Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
-  --primary: #0052cc;
-  --secondary: #078045;
-  --dark: #1a202c;
+  --primary: #0c2d6b;
+  --primary-light: #1e4d9e;
+  --secondary: #0d8a52;
+  --dark: #161d2b;
   --light: #e1e4e6;
-  --border: #e2e8f0;
-  --accent: #e53e3e;
-  --gold: #d69e2e;
-  --status-green-bg: #f0fff4;
-  --status-green-border: #078045;
+  --border: #e5e8ef;
+  --accent: #cf3838;
+  --gold: #bf9530;
+  --gold-light: #e0bf5e;
+  --status-green-bg: #f0fdf6;
+  --status-green-border: #0d8a52;
   --status-yellow-bg: #fffaf0;
-  --status-yellow-border: #d69e2e;
+  --status-yellow-border: #bf9530;
   --status-red-bg: #fff5f5;
-  --status-red-border: #e53e3e;
+  --status-red-border: #cf3838;
   --card-bg: #ffffff;
-  --body-bg: #e1e4e6;
-  --th-bg: #f7fafc;
+  --body-bg: #eef0f4;
+  --th-bg: #f6f7fb;
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.06);
+  --shadow-md: 0 6px 16px -4px rgba(16,24,40,0.10), 0 2px 6px -2px rgba(16,24,40,0.06);
+  --shadow-lg: 0 16px 32px -8px rgba(16,24,40,0.16), 0 4px 10px -2px rgba(16,24,40,0.08);
 }
 
 /* ── RESET ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--body-bg);
+  background-image: radial-gradient(circle at top left, rgba(12,45,107,0.05), transparent 45%),
+                     radial-gradient(circle at bottom right, rgba(191,149,48,0.05), transparent 45%);
+  background-attachment: fixed;
   color: var(--dark);
   padding: clamp(8px, 3vw, 20px);
+  letter-spacing: 0.005em;
 }
 
 /* ── HEADER ────────────────────────────────────────────────── */
 header {
-  background: linear-gradient(135deg, var(--primary), #002266);
+  position: relative;
+  background: linear-gradient(150deg, #0a2456 0%, var(--primary) 45%, #0a2456 100%);
   color: white;
-  padding: clamp(14px, 4vw, 25px);
-  border-radius: 12px;
+  padding: clamp(18px, 4vw, 32px);
+  border-radius: 16px;
   margin-bottom: clamp(14px, 3vw, 25px);
   text-align: center;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
 }
-h1 { font-size: clamp(1.1rem, 5vw, 2.2rem); margin-bottom: 6px; line-height: 1.2; }
-.header-inner { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-.header-logo  { height: clamp(36px, 8vw, 60px); flex-shrink: 0; }
+header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+}
+h1 {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.1rem, 5vw, 2.2rem);
+  margin-bottom: 6px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+.header-inner { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; position: relative; z-index: 1; }
+.header-logo  { height: clamp(36px, 8vw, 60px); flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
 
 /* ── LAYOUT ────────────────────────────────────────────────── */
 .container { max-width: 1400px; margin: 0 auto; }
@@ -53,13 +82,23 @@ h1 { font-size: clamp(1.1rem, 5vw, 2.2rem); margin-bottom: 6px; line-height: 1.2
 /* ── CARDS ─────────────────────────────────────────────────── */
 .card {
   background: var(--card-bg);
-  border-radius: 10px;
+  border-radius: 14px;
   border: 1px solid var(--border);
-  padding: clamp(12px, 3vw, 20px);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-  margin-bottom: 16px;
+  padding: clamp(14px, 3vw, 22px);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 18px;
+  transition: box-shadow 0.2s ease;
 }
-.card h2 { font-size: clamp(1.05rem, 3.5vw, 1.4rem); margin-bottom: 14px; border-bottom: 2px solid var(--light); padding-bottom: 8px; color: var(--primary); }
+.card h2 {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 3.5vw, 1.4rem);
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--light);
+  padding-bottom: 10px;
+  color: var(--primary);
+  letter-spacing: 0.01em;
+}
 
 /* ── FORMS ─────────────────────────────────────────────────── */
 input[type="text"], select, textarea {
@@ -76,29 +115,28 @@ textarea { font-family: monospace; font-size: 0.82rem; height: 120px; resize: no
 .input-group button { flex-shrink: 0; white-space: nowrap; }
 
 button {
-  background-color: var(--primary);
+  background: linear-gradient(160deg, var(--primary-light), var(--primary));
   color: white;
   border: none;
-  padding: 11px 18px;
-  border-radius: 6px;
+  padding: 11px 20px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   min-height: 44px;
+  box-shadow: var(--shadow-sm);
 }
-button:hover  { background-color: #0041a3; }
-button:disabled { background-color: #cbd5e0; cursor: not-allowed; }
-button.secondary { background-color: var(--secondary); }
-button.secondary:hover { background-color: #056134; }
-button.danger  { background-color: var(--accent); }
-button.danger:hover  { background-color: #c53030; }
-button.gold    { background-color: var(--gold); color: white; }
-button.gold:hover    { background-color: #b78725; }
+button:hover:not(:disabled)  { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+button:disabled { background: #cbd5e0; cursor: not-allowed; box-shadow: none; }
+button.secondary { background: linear-gradient(160deg, #12a664, var(--secondary)); }
+button.danger  { background: linear-gradient(160deg, #e15252, var(--accent)); }
+button.gold    { background: linear-gradient(160deg, var(--gold-light), var(--gold)); color: #3d2f06; }
 
 /* ── TABS ──────────────────────────────────────────────────── */
 .tabs {
@@ -126,8 +164,8 @@ button.gold:hover    { background-color: #b78725; }
   flex-shrink: 0;
 }
 .tab-btn:hover  { background-color: #edf2f7; }
-.tab-btn.active { background-color: var(--primary); color: white; }
-.tab-btn.setup-tab { border: 1px dashed var(--gold); color: #b78725; }
+.tab-btn.active { background: linear-gradient(160deg, var(--primary-light), var(--primary)); color: white; box-shadow: var(--shadow-sm); }
+.tab-btn.setup-tab { border: 1px dashed var(--gold); color: #8a6a1f; }
 
 /* ── GRIDS ─────────────────────────────────────────────────── */
 .assignments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 16px; }
@@ -140,10 +178,19 @@ button.gold:hover    { background-color: #b78725; }
 .staging-item:last-child { border-bottom: none; }
 
 /* ── TABLES ────────────────────────────────────────────────── */
-.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; min-width: 520px; }
-th, td { padding: 9px 7px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-th { background-color: var(--th-bg); font-weight: 600; color: #4a5568; }
+th, td { padding: 11px 9px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th {
+  background-color: var(--th-bg);
+  font-weight: 700;
+  color: #5a6478;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}
+tbody tr:hover { background-color: rgba(12,45,107,0.035); }
+tbody tr:nth-child(even):not(.qualify-direct):not(.qualify-wildcard) { background-color: rgba(16,24,40,0.012); }
 tr.qualify-direct  { border-left: 4px solid var(--secondary); background-color: var(--status-green-bg); }
 tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: var(--status-yellow-bg); }
 .group-container table { min-width: 0; }
@@ -212,6 +259,19 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 .bracket-round { min-width: clamp(160px, 30vw, 240px); display: flex; flex-direction: column; gap: 0; position: relative; z-index: 1; }
 .bracket-round-matches { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 10px; }
 .bracket-round-title { font-weight: bold; text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--primary); color: var(--dark); font-size: clamp(0.72rem,2.2vw,0.95rem); margin-bottom: 8px; }
+.bracket-round-subtitle { text-align: center; font-size: 0.68rem; color: #718096; margin: -4px 0 8px 0; font-weight: normal; }
+.bracket-final-group { display: flex; flex-direction: column; width: 100%; }
+.bracket-third-heading {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  margin: 16px 0 8px 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
 .bracket-match { flex-direction: column; padding: 10px 12px; gap: 8px; position: relative; z-index: 1; }
 @media (max-width: 600px) {
   .bracket-tree { gap: 34px; }
@@ -250,7 +310,7 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 .aet-pill { display: inline-block; background: #faf089; color: #744210; font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; margin-left: 4px; white-space: nowrap; }
 
 /* ── STATUS BANNER ─────────────────────────────────────────── */
-.status-banner { padding: 13px 15px; border-radius: 8px; background-color: #ebf8ff; color: #2b6cb0; font-size: clamp(0.78rem, 2.5vw, 0.9rem); margin-bottom: 16px; font-weight: 500; border-left: 4px solid #3182ce; line-height: 1.4; }
+.status-banner { padding: 13px 16px; border-radius: 10px; background-color: #ebf8ff; color: #2b6cb0; font-size: clamp(0.78rem, 2.5vw, 0.9rem); margin-bottom: 16px; font-weight: 500; border-left: 4px solid #3182ce; line-height: 1.4; box-shadow: var(--shadow-sm); }
 .live-pulse { display: inline-block; width: 8px; height: 8px; background-color: var(--secondary); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0%{transform:scale(0.9);opacity:1;} 50%{transform:scale(1.2);opacity:0.4;} 100%{transform:scale(0.9);opacity:1;} }
 .hidden { display: none !important; }
@@ -290,13 +350,48 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 
 /* ── KO PILLS ──────────────────────────────────────────────── */
 .ko-pill { display: inline-block; font-size: 0.66rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; margin-left: 3px; vertical-align: middle; white-space: nowrap; }
-.ko-pill-champion { background: #ffd700; color: #5a3e00; }
+.ko-pill-champion { background: linear-gradient(160deg, #ffe27a, #ffd700); color: #5a3e00; }
 .ko-pill-final    { background: #c6f6d5; color: #276749; }
+.ko-pill-third    { background: #fbd38d; color: #7b341e; }
 .ko-pill-sf       { background: #bee3f8; color: #2a69ac; }
 .ko-pill-qf       { background: #e9d8fd; color: #553c9a; }
 .ko-pill-r16      { background: #fed7e2; color: #97266d; }
 .ko-pill-r32      { background: #e2e8f0; color: #4a5568; }
 .ko-pill-out      { background: #fff5f5; color: #c53030; }
+.ko-pill-group-q  { background: #c6f6d5; color: #276749; }
+.ko-pill-group-wc { background: #fefcbf; color: #8a6a1f; }
+
+/* ── LEAGUE TABLE VIEW TOGGLE ──────────────────────────────── */
+.league-toggle {
+  display: inline-flex;
+  background: var(--th-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 14px;
+  gap: 4px;
+}
+.league-toggle-btn {
+  background: transparent;
+  color: #5a6478;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  min-height: 0;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+.league-toggle-btn:hover:not(.active) { background: rgba(12,45,107,0.06); transform: none; box-shadow: none; }
+.league-toggle-btn.active {
+  background: linear-gradient(160deg, var(--primary-light), var(--primary));
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+body.dark .league-toggle-btn:hover:not(.active) { background: rgba(255,255,255,0.05); }
 
 /* ── FIXTURE DATE HEADER ───────────────────────────────────── */
 .fixture-date-header { font-size: 0.83rem; font-weight: 700; color: #4a5568; background: #f7fafc; padding: 7px 12px; border-radius: 6px; margin: 12px 0 5px 0; border-left: 3px solid var(--primary); }
@@ -306,12 +401,14 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 :root { --bracket-line: #cbd5e0; }
 body.dark {
   --primary: #6ea8ff;
+  --primary-light: #90bfff;
   --secondary: #38a169;
   --dark: #edf2f7;
   --light: #0f172a;
   --border: #2d3748;
   --accent: #f56565;
   --gold: #ecc94b;
+  --gold-light: #f6dc8a;
   --status-green-bg: #0f2d1e;
   --status-green-border: #2f855a;
   --status-yellow-bg: #2d2a12;
@@ -322,8 +419,13 @@ body.dark {
   --body-bg: #0f172a;
   --th-bg: #1e293b;
   --bracket-line: #475569;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
+  --shadow-md: 0 6px 16px -4px rgba(0,0,0,0.45), 0 2px 6px -2px rgba(0,0,0,0.3);
+  --shadow-lg: 0 16px 32px -8px rgba(0,0,0,0.55), 0 4px 10px -2px rgba(0,0,0,0.35);
 }
-body.dark { background-color: var(--body-bg); color: var(--dark); }
+body.dark { background-color: var(--body-bg); background-image: none; color: var(--dark); }
+body.dark tbody tr:hover { background-color: rgba(110,168,255,0.06); }
+body.dark tbody tr:nth-child(even):not(.qualify-direct):not(.qualify-wildcard) { background-color: rgba(255,255,255,0.015); }
 body.dark input, body.dark select, body.dark textarea { background: #0f172a; color: #edf2f7; border-color: var(--border); }
 body.dark header { background: linear-gradient(135deg, #0f172a, #1e293b); }
 body.dark tr { background-color: transparent; }
@@ -341,6 +443,7 @@ body.dark .tab-btn.setup-tab { border-color: var(--gold); color: var(--gold); }
 body.dark th { color: #a0aec0; }
 body.dark small { color: #94a3b8; }
 body.dark .bracket-team-owner { color: #94a3b8; }
+body.dark .bracket-round-subtitle { color: #94a3b8; }
 body.dark .bracket-team-row + .bracket-team-row { border-top-color: var(--border); }
 </style>
 </head>
@@ -425,7 +528,11 @@ body.dark .bracket-team-row + .bracket-team-row { border-top-color: var(--border
   <div id="tab-playertable" class="tab-content hidden">
     <div class="card">
       <h2>🏆 Participant League Table</h2>
-      <p style="font-size:0.86rem;color:#718096;margin-bottom:13px;">
+      <div class="league-toggle" id="league-toggle">
+        <button type="button" class="league-toggle-btn active" id="btn-league-full"  onclick="setLeagueTableView('full')">Full Tournament</button>
+        <button type="button" class="league-toggle-btn"        id="btn-league-group" onclick="setLeagueTableView('group')">Group Stage Only</button>
+      </div>
+      <p id="league-table-desc" style="font-size:0.86rem;color:#718096;margin-bottom:13px;">
         Combined stats across all teams per participant — group stage and knockout rounds.
         KO draws resolved by penalty shootout winner. Penalties don't count as goals (per FIFA convention).
       </p>
@@ -517,13 +624,16 @@ let manualPins = {};
 let state = {
   players: [], assignments: {}, assignmentSource: {},
   isGenerated: false, groupMatches: [],
-  koMatches: { r32:[], r16:[], qf:[], sf:[], final:[] }
+  koMatches: { r32:[], r16:[], qf:[], sf:[], third:[], final:[] }
 };
 let liveScoresCache  = {};
 let _lastScoreHash   = '';
 let _fetchFailCount  = 0;
+let leagueTableMode  = 'full'; // 'full' | 'group'
 window.teamStatuses  = {};
 window.teamBestRound = {};
+window.teamGroupStageResult = {};
+window._lastStandings = null;
 
 // ── BANNER HELPER ──────────────────────────────────────────────────────────
 function setBannerState(type, html) {
@@ -553,6 +663,7 @@ async function initAppEngine() {
     const text = (await res.text()).replace(/[^A-Za-z0-9+/=]/g, '');
     if (!text || text === 'PASTE_GENERATED_STRING_HERE') throw new Error('empty');
     state = JSON.parse(atob(text));
+    if (!state.koMatches.third) state.koMatches.third = []; // backward-compat for saved states predating 3rd-place support
     document.getElementById('btn-tab-setup').classList.add('hidden');
     setBannerState('loading', `<span class="live-pulse"></span> <strong>Loading:</strong> Fetching 2026 match results…`);
     switchTab('assignments');
@@ -720,6 +831,7 @@ function buildDistributionsString() {
   state.koMatches.r16   = Array.from({length:8},  (_,i) => ({id:`R16-${i}`,   type:'r16',   home:'', away:''}));
   state.koMatches.qf    = Array.from({length:4},  (_,i) => ({id:`QF-${i}`,    type:'qf',    home:'', away:''}));
   state.koMatches.sf    = Array.from({length:2},  (_,i) => ({id:`SF-${i}`,    type:'sf',    home:'', away:''}));
+  state.koMatches.third = [{id:'THIRD-0', type:'third', home:'', away:''}];
   state.koMatches.final = [{id:'FINAL-0', type:'final', home:'', away:''}];
   state.isGenerated = true;
 
@@ -743,15 +855,24 @@ async function fetchLiveWorldCupScores() {
 
     const newCache = {};
 
-    const apiKOs = { r32: [], r16: [], qf: [], sf: [], final: [] };
+    const apiKOs = { r32: [], r16: [], qf: [], sf: [], third: [], final: [] };
     // NOTE: the openfootball feed uses singular round names ("Quarter-final",
     // "Semi-final") — matching the plural forms here silently dropped all
     // QF/SF data, which is why those rounds previously showed stale/blank teams.
+    // "Match for third place" is the confirmed exact string the 2026 feed uses
+    // (num 103); a couple of other sources' phrasings are kept as harmless
+    // fallback aliases in case the feed's wording ever shifts.
     const koMapping = {
       "Round of 32": "r32",
       "Round of 16": "r16",
       "Quarter-final": "qf",
       "Semi-final": "sf",
+      "Match for third place": "third",
+      "3rd Place Final": "third",
+      "3rd Place Play-off": "third",
+      "Play-off for third place": "third",
+      "Third place": "third",
+      "Third Place": "third",
       "Final": "final"
     };
 
@@ -827,6 +948,7 @@ async function fetchLiveWorldCupScores() {
     if (apiKOs.r16.length > 0) state.koMatches.r16 = apiKOs.r16;
     if (apiKOs.qf.length > 0)  state.koMatches.qf = apiKOs.qf;
     if (apiKOs.sf.length > 0)  state.koMatches.sf = apiKOs.sf;
+    if (apiKOs.third.length > 0) state.koMatches.third = apiKOs.third;
     if (apiKOs.final.length > 0) state.koMatches.final = apiKOs.final;
 
     const newHash = JSON.stringify(newCache);
@@ -912,7 +1034,13 @@ function processAndCalculateStandings() {
     if (grp[3]) mark(grp[3].team, 'red', 'out');
   });
 
-  ['r32','r16','qf','sf','final'].forEach(round => {
+  // Snapshot the group-stage-only outcome (qualified / wildcard / eliminated)
+  // before the knockout rounds below overwrite window.teamBestRound with
+  // later-stage progress — the "Group Stage Only" league table view needs
+  // this untouched copy.
+  window.teamGroupStageResult = { ...window.teamBestRound };
+
+  ['r32','r16','qf','sf','third','final'].forEach(round => {
     state.koMatches[round].forEach(m => {
       resolveKO(m);
 
@@ -934,6 +1062,8 @@ function processAndCalculateStandings() {
 
   const champ = state.koMatches.final.length > 0 ? getWinner(state.koMatches.final[0]) : null;
   if (champ) { window.teamStatuses[champ]='green'; window.teamBestRound[champ]='champion'; }
+
+  window._lastStandings = standings;
 
   renderAssignmentsGridUI();
   renderPlayerLeagueTableUI(standings);
@@ -996,11 +1126,13 @@ function getKOPill(team) {
   const map = {
     'champion':  ['ko-pill-champion', '🏆 Champion'],
     'final':     ['ko-pill-final',    'Final'],
+    'third':     ['ko-pill-third',    '🥉 3rd Place'],
     'sf':        ['ko-pill-sf',       'Semi-Final'],
     'qf':        ['ko-pill-qf',       'Quarter-Final'],
     'r16':       ['ko-pill-r16',      'Round of 16'],
     'r32':       ['ko-pill-r32',      'Round of 32'],
     'final_out': ['ko-pill-out',      'Final (L)'],
+    'third_out': ['ko-pill-out',      '4th Place'],
     'sf_out':    ['ko-pill-out',      'SF exit'],
     'qf_out':    ['ko-pill-out',      'QF exit'],
     'r16_out':   ['ko-pill-out',      'R16 exit'],
@@ -1012,7 +1144,7 @@ function getKOPill(team) {
 }
 
 // ── PLAYER LEAGUE TABLE ───────────────────────────────────────────────────
-function computePlayerLeagueStandings(standings) {
+function computePlayerLeagueStandings(standings, mode) {
   const teamRowByName = {};
   Object.values(standings).forEach(rows => rows.forEach(row => { teamRowByName[row.team] = row; }));
 
@@ -1034,47 +1166,66 @@ function computePlayerLeagueStandings(standings) {
     agg.pts += row.p;
   });
 
-  ['r32','r16','qf','sf','final'].forEach(round => {
-    state.koMatches[round].forEach(m => {
-      if (m.homeScore == null || m.awayScore == null) return;
-      [
-        { team: m.home, gf: m.homeScore, ga: m.awayScore },
-        { team: m.away, gf: m.awayScore, ga: m.homeScore },
-      ].forEach(({ team, gf, ga }) => {
-        const player = state.assignments[team];
-        if (!player || !byPlayer[player]) return;
-        const agg = byPlayer[player];
-        agg.p  += 1;
-        agg.gf += gf;
-        agg.ga += ga;
-        if (gf > ga) {
-          agg.w++; agg.pts += 3;
-        } else if (gf === ga) {
-          const winner = getWinner(m);
-          if (winner === team) { agg.w++; agg.pts += 3; }
-          else                 { agg.l++; }
-        } else {
-          agg.l++;
-        }
+  // Group Stage Only view stops here — knockout results are excluded entirely.
+  if (mode !== 'group') {
+    ['r32','r16','qf','sf','third','final'].forEach(round => {
+      state.koMatches[round].forEach(m => {
+        if (m.homeScore == null || m.awayScore == null) return;
+        [
+          { team: m.home, gf: m.homeScore, ga: m.awayScore },
+          { team: m.away, gf: m.awayScore, ga: m.homeScore },
+        ].forEach(({ team, gf, ga }) => {
+          const player = state.assignments[team];
+          if (!player || !byPlayer[player]) return;
+          const agg = byPlayer[player];
+          agg.p  += 1;
+          agg.gf += gf;
+          agg.ga += ga;
+          if (gf > ga) {
+            agg.w++; agg.pts += 3;
+          } else if (gf === ga) {
+            const winner = getWinner(m);
+            if (winner === team) { agg.w++; agg.pts += 3; }
+            else                 { agg.l++; }
+          } else {
+            agg.l++;
+          }
+        });
       });
     });
-  });
+  }
 
   return Object.values(byPlayer).map(agg => { agg.gd = agg.gf - agg.ga; return agg; })
     .sort((a,b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
 }
 
+// Switches the League Table between "Full Tournament" and "Group Stage Only"
+// and re-renders instantly from the last computed standings — no refetch needed.
+function setLeagueTableView(mode) {
+  if (mode !== 'full' && mode !== 'group') return;
+  leagueTableMode = mode;
+  document.getElementById('btn-league-full').classList.toggle('active', mode === 'full');
+  document.getElementById('btn-league-group').classList.toggle('active', mode === 'group');
+  const desc = document.getElementById('league-table-desc');
+  if (desc) {
+    desc.textContent = mode === 'group'
+      ? "Group stage matches only — knockout results are excluded from this view."
+      : "Combined stats across all teams per participant — group stage and knockout rounds. KO draws resolved by penalty shootout winner. Penalties don't count as goals (per FIFA convention).";
+  }
+  if (window._lastStandings) renderPlayerLeagueTableUI(window._lastStandings);
+}
+
 function renderPlayerLeagueTableUI(standings) {
   const tbody = document.getElementById('player-league-rows');
   if (!tbody) return;
-  const rows = computePlayerLeagueStandings(standings);
+  const rows = computePlayerLeagueStandings(standings, leagueTableMode);
 
   if (!rows.length) {
     tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#a0aec0;padding:20px;">No participants yet.</td></tr>`;
     return;
   }
 
-  const roundOrder = ['champion','final','sf','qf','r16','r32','group_q','group_wc','out',''];
+  const roundOrder = ['champion','final','third','sf','qf','r16','r32','group_q','group_wc','out',''];
 
   tbody.innerHTML = rows.map((r, idx) => {
     const flags = r.teams.length
@@ -1132,17 +1283,18 @@ function renderFixturesUI() {
   container.innerHTML = '';
 
   const koRounds = [
-    { key:'r32',   label:'Round of 32' },
-    { key:'r16',   label:'Round of 16' },
-    { key:'qf',    label:'Quarter-Finals' },
-    { key:'sf',    label:'Semi-Finals' },
     { key:'final', label:'Grand Final' },
+    { key:'third', label:'Third-Place Play-off' },
+    { key:'sf',    label:'Semi-Finals' },
+    { key:'qf',    label:'Quarter-Finals' },
+    { key:'r16',   label:'Round of 16' },
+    { key:'r32',   label:'Round of 32' },
   ];
 
   let hasAnyKO = false;
   koRounds.forEach(({ key, label }) => {
-    const played = state.koMatches[key].filter(m => m.homeScore != null);
-    if (!played.length) return;
+    const withTeams = state.koMatches[key].filter(m => m.home);
+    if (!withTeams.length) return;
     if (!hasAnyKO) {
       hasAnyKO = true;
       const div = document.createElement('div');
@@ -1155,9 +1307,7 @@ function renderFixturesUI() {
     h.style.fontSize = '0.95rem';
     h.textContent = label;
     container.appendChild(h);
-    state.koMatches[key].forEach(m => {
-      if (m.home && m.homeScore != null) container.appendChild(buildMatchRow(m, true));
-    });
+    withTeams.forEach(m => container.appendChild(buildMatchRow(m, true)));
   });
 
   if (hasAnyKO) {
@@ -1262,13 +1412,70 @@ const BRACKET_TREE = {
 // of its array positions that keeps every pair of matches feeding the next
 // round visually adjacent — so the connector lines never have to cross.
 function computeBracketDisplayOrder(round) {
-  if (round === 'final') return [0];
+  if (round === 'final' || round === 'third') return [0];
   const nextRound  = BRACKET_ROUND_CHAIN[BRACKET_ROUND_CHAIN.indexOf(round) + 1];
   const nextOrder  = computeBracketDisplayOrder(nextRound);
   const sources    = BRACKET_TREE[nextRound];
   const order = [];
   nextOrder.forEach(slot => { order.push(...sources[slot]); });
   return order;
+}
+
+// Builds a single bracket match card element (flag/name/score rows, penalty
+// or AET pills, winner highlighting). Shared by the main round columns and
+// by the 3rd Place Play-off card rendered separately beneath the Final.
+function buildBracketMatchCard(m, cardId) {
+  const card = document.createElement('div');
+  card.className = 'match-row bracket-match';
+  card.id = cardId;
+
+  const hOwner = state.assignments[m.home] ? escapeHTML(state.assignments[m.home]) : '';
+  const aOwner = state.assignments[m.away] ? escapeHTML(state.assignments[m.away]) : '';
+  const hs  = m.homeScore != null ? m.homeScore : '';
+  const as_ = m.awayScore != null ? m.awayScore : '';
+
+  const winner   = getWinner(m);
+  const hWinCls  = winner && winner === m.home ? ' winner' : '';
+  const aWinCls  = winner && winner === m.away ? ' winner' : '';
+
+  // Penalty pills take priority (draw resolved on spot-kicks). If the
+  // match instead finished with a winner in extra time (no shootout
+  // needed), show a distinct "AET" pill instead.
+  let hPenPill = '', aPenPill = '';
+  if (m.homePens != null && m.awayPens != null) {
+    hPenPill = m.penWinner === m.home
+      ? `<span class="pen-pill">${m.homePens}p &#10003;</span>`
+      : `<span class="pen-pill" style="opacity:0.5;">${m.homePens}p</span>`;
+    aPenPill = m.penWinner === m.away
+      ? `<span class="pen-pill">${m.awayPens}p &#10003;</span>`
+      : `<span class="pen-pill" style="opacity:0.5;">${m.awayPens}p</span>`;
+  } else if (m.wentToET && m.homeScore != null && m.awayScore != null) {
+    hPenPill = `<span class="aet-pill">AET</span>`;
+    aPenPill = `<span class="aet-pill">AET</span>`;
+  }
+
+  // Layout: two stacked rows, each with flag + team name (+ owner) on the
+  // left and the score on the right — winner row highlighted in green.
+  card.innerHTML = `
+    <div class="bracket-team-row${hWinCls}">
+      <div class="bracket-team-info">
+        ${getFlagImg(m.home)}
+        <span class="bracket-team-name">${escapeHTML(m.home)}</span>
+        ${hPenPill}
+        ${hOwner ? `<span class="bracket-team-owner">(${hOwner})</span>` : ''}
+      </div>
+      <div class="bracket-score">${hs}</div>
+    </div>
+    <div class="bracket-team-row${aWinCls}">
+      <div class="bracket-team-info">
+        ${getFlagImg(m.away)}
+        <span class="bracket-team-name">${escapeHTML(m.away)}</span>
+        ${aPenPill}
+        ${aOwner ? `<span class="bracket-team-owner">(${aOwner})</span>` : ''}
+      </div>
+      <div class="bracket-score">${as_}</div>
+    </div>`;
+  return card;
 }
 
 function renderBracketUI() {
@@ -1278,7 +1485,8 @@ function renderBracketUI() {
 
   const rounds = [
     {key:'r32',title:'Round of 32'},{key:'r16',title:'Round of 16'},
-    {key:'qf',title:'Quarter-Finals'},{key:'sf',title:'Semi-Finals'},{key:'final',title:'Final'}
+    {key:'qf',title:'Quarter-Finals'},{key:'sf',title:'Semi-Finals'},
+    {key:'final',title:'Final'}
   ];
   rounds.forEach(r => {
     const col = document.createElement('div'); col.className = 'bracket-round';
@@ -1288,60 +1496,37 @@ function renderBracketUI() {
     // Display in bracket-topology order (not raw array/num order) so that
     // sibling matches sit next to each other and lines converge cleanly.
     const displayOrder = computeBracketDisplayOrder(r.key);
-    displayOrder.map(origIdx => state.koMatches[r.key][origIdx]).forEach((m, idx) => {
-      if (!m) return;
-      const card = document.createElement('div');
-      card.className = 'match-row bracket-match';
-      card.id = `bm-${r.key}-${idx}`;
+    const matches = displayOrder.map(origIdx => (state.koMatches[r.key] || [])[origIdx]);
 
-      const hOwner = state.assignments[m.home] ? escapeHTML(state.assignments[m.home]) : '';
-      const aOwner = state.assignments[m.away] ? escapeHTML(state.assignments[m.away]) : '';
-      const hs  = m.homeScore != null ? m.homeScore : '';
-      const as_ = m.awayScore != null ? m.awayScore : '';
-
-      const winner   = getWinner(m);
-      const hWinCls  = winner && winner === m.home ? ' winner' : '';
-      const aWinCls  = winner && winner === m.away ? ' winner' : '';
-
-      // Penalty pills take priority (draw resolved on spot-kicks). If the
-      // match instead finished with a winner in extra time (no shootout
-      // needed), show a distinct "AET" pill instead.
-      let hPenPill = '', aPenPill = '';
-      if (m.homePens != null && m.awayPens != null) {
-        hPenPill = m.penWinner === m.home
-          ? `<span class="pen-pill">${m.homePens}p &#10003;</span>`
-          : `<span class="pen-pill" style="opacity:0.5;">${m.homePens}p</span>`;
-        aPenPill = m.penWinner === m.away
-          ? `<span class="pen-pill">${m.awayPens}p &#10003;</span>`
-          : `<span class="pen-pill" style="opacity:0.5;">${m.awayPens}p</span>`;
-      } else if (m.wentToET && m.homeScore != null && m.awayScore != null) {
-        hPenPill = `<span class="aet-pill">AET</span>`;
-        aPenPill = `<span class="aet-pill">AET</span>`;
+    if (r.key === 'final') {
+      // The 3rd Place Play-off is fed by the two Semi-Final LOSERS rather
+      // than the winners, so it isn't part of the winner-progression chain
+      // feeding the Final. It's grouped into the same block as the Final
+      // card (rather than added as a separate flex sibling) so the two
+      // move and centre together — the 3rd place card ends up directly
+      // beneath the Final instead of being pulled apart by space-around.
+      const group = document.createElement('div');
+      group.className = 'bracket-final-group';
+      matches.forEach((m, idx) => {
+        if (!m) return;
+        group.appendChild(buildBracketMatchCard(m, `bm-final-${idx}`));
+      });
+      const thirdMatch = (state.koMatches.third || [])[0];
+      if (thirdMatch) {
+        const thirdHeading = document.createElement('div');
+        thirdHeading.className = 'bracket-third-heading';
+        thirdHeading.textContent = '3rd Place Play-off';
+        group.appendChild(thirdHeading);
+        group.appendChild(buildBracketMatchCard(thirdMatch, 'bm-third-0'));
       }
+      matchesWrap.appendChild(group);
+    } else {
+      matches.forEach((m, idx) => {
+        if (!m) return;
+        matchesWrap.appendChild(buildBracketMatchCard(m, `bm-${r.key}-${idx}`));
+      });
+    }
 
-      // Layout: two stacked rows, each with flag + team name (+ owner) on the
-      // left and the score on the right — winner row highlighted in green.
-      card.innerHTML = `
-        <div class="bracket-team-row${hWinCls}">
-          <div class="bracket-team-info">
-            ${getFlagImg(m.home)}
-            <span class="bracket-team-name">${escapeHTML(m.home)}</span>
-            ${hPenPill}
-            ${hOwner ? `<span class="bracket-team-owner">(${hOwner})</span>` : ''}
-          </div>
-          <div class="bracket-score">${hs}</div>
-        </div>
-        <div class="bracket-team-row${aWinCls}">
-          <div class="bracket-team-info">
-            ${getFlagImg(m.away)}
-            <span class="bracket-team-name">${escapeHTML(m.away)}</span>
-            ${aPenPill}
-            ${aOwner ? `<span class="bracket-team-owner">(${aOwner})</span>` : ''}
-          </div>
-          <div class="bracket-score">${as_}</div>
-        </div>`;
-      matchesWrap.appendChild(card);
-    });
     col.appendChild(matchesWrap);
     container.appendChild(col);
   });
@@ -1352,7 +1537,9 @@ function renderBracketUI() {
 
 // Draws the elbow connector lines that link each pair of matches to the
 // single match they feed into in the next round — the "family tree" effect
-// running left to right toward the centre/final.
+// running left to right toward the centre/final. The 3rd Place Play-off is
+// fed by the two Semi-Final LOSERS (not winners), so it deliberately sits
+// outside this winner-progression chain and is rendered without connectors.
 function drawBracketConnectors() {
   const container = document.getElementById('bracket-tree-ui');
   const svg = document.getElementById('bracket-lines-svg');
