@@ -352,6 +352,7 @@ tr.qualify-wildcard{ border-left: 4px solid var(--gold);      background-color: 
 .ko-pill { display: inline-block; font-size: 0.66rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; margin-left: 3px; vertical-align: middle; white-space: nowrap; }
 .ko-pill-champion { background: linear-gradient(160deg, #ffe27a, #ffd700); color: #5a3e00; }
 .ko-pill-final    { background: #c6f6d5; color: #276749; }
+.ko-pill-second   { background: #c6f6d5; color: #276749; }
 .ko-pill-third    { background: #fbd38d; color: #7b341e; }
 .ko-pill-sf       { background: #bee3f8; color: #2a69ac; }
 .ko-pill-qf       { background: #e9d8fd; color: #553c9a; }
@@ -1257,7 +1258,7 @@ function getKOPill(team) {
     'qf':        ['ko-pill-qf',       'Quarter-Final'],
     'r16':       ['ko-pill-r16',      'Round of 16'],
     'r32':       ['ko-pill-r32',      'Round of 32'],
-    'final_out': ['ko-pill-out',      'Final (L)'],
+    'final_out': ['ko-pill-second',   '🥈 2nd Place'],
     'third_out': ['ko-pill-out',      '4th Place'],
     'sf_out':    ['ko-pill-out',      'SF exit'],
     'qf_out':    ['ko-pill-out',      'QF exit'],
