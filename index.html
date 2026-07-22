@@ -511,7 +511,7 @@ body.dark .champion-banner { color: #fff3d6; }
     <button class="tab-btn setup-tab active" id="btn-tab-setup"        onclick="switchTab('setup')">Generator</button>
     <button class="tab-btn"                  id="btn-tab-assignments"  onclick="switchTab('assignments')">Assignments</button>
     <button class="tab-btn"                  id="btn-tab-playertable"  onclick="switchTab('playertable')">League Table</button>
-    <button class="tab-btn"                  id="btn-tab-goldenboot"   onclick="switchTab('goldenboot')">👢 Golden Boot</button>
+    <button class="tab-btn"                  id="btn-tab-goldenboot"   onclick="switchTab('goldenboot')">Golden Boot</button>
     <button class="tab-btn"                  id="btn-tab-groups"       onclick="switchTab('groups')">Groups</button>
     <button class="tab-btn"                  id="btn-tab-fixtures"     onclick="switchTab('fixtures')">Fixtures</button>
     <button class="tab-btn"                  id="btn-tab-bracket"      onclick="switchTab('bracket')">Knockout</button>
@@ -1334,8 +1334,9 @@ function showChampionBanner(team) {
 
 // Lightweight canvas confetti burst — no external library so the app stays
 // a single self-contained file. Fires once per page load, the moment the
-// Final's winner is resolved.
-function fireConfetti(durationMs = 3500) {
+// Final's winner is resolved. Particles fall until each one drops off the
+// bottom of the viewport, rather than clearing on a fixed timer.
+function fireConfetti() {
   const canvas = document.getElementById('confetti-canvas');
   if (!canvas) return;
   canvas.classList.remove('hidden');
@@ -1344,7 +1345,7 @@ function fireConfetti(durationMs = 3500) {
   resize();
 
   const colors = ['#bf9530', '#e0bf5e', '#0d8a52', '#cf3838', '#1e4d9e', '#ffffff'];
-  const particles = Array.from({ length: 160 }, () => ({
+  let particles = Array.from({ length: 160 }, () => ({
     x: Math.random() * canvas.width,
     y: -20 - Math.random() * canvas.height * 0.5,
     r: 4 + Math.random() * 5,
@@ -1356,9 +1357,7 @@ function fireConfetti(durationMs = 3500) {
     shape: Math.random() < 0.5 ? 'rect' : 'circle'
   }));
 
-  const start = performance.now();
-  function frame(now) {
-    const elapsed = now - start;
+  function frame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(p => {
       p.x += p.vx; p.y += p.vy; p.rot += p.vr;
@@ -1370,7 +1369,13 @@ function fireConfetti(durationMs = 3500) {
       else { ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI * 2); ctx.fill(); }
       ctx.restore();
     });
-    if (elapsed < durationMs) {
+
+    // Drop any particle once it's fully below the visible viewport — this
+    // is what makes the burst end by falling off the bottom rather than
+    // by an arbitrary timer cutoff.
+    particles = particles.filter(p => p.y - p.r < canvas.height);
+
+    if (particles.length > 0) {
       requestAnimationFrame(frame);
     } else {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
